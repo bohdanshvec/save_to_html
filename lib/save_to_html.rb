@@ -1,13 +1,15 @@
+require 'sanitize'
+
 class SaveToHtml
 
-  def initialize(content, bypass_html = false, name = "index")
-    @content = content
-    @name = name
-    @tag = bypass_html ? "script" : "p"
+  def initialize(content:, bypass_html: true, name: "index")
+    @content = bypass_html ? Sanitize.fragment(content) : content
+    @file_name = name + Time.now.to_s
   end
 
+
   def create
-    File.open(@name + ".html", "w") do |f|
+    File.open(@file_name + ".html", "w") do |f|
       f.write(template)
     end
   end
@@ -22,7 +24,7 @@ class SaveToHtml
     <title>Тестовая страница</title>
   </head>
   <body>
-    <#{@tag}>#{@content}</#{@tag}>
+    #{@content}
   </body>
 </html>"
   end
